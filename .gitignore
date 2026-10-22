@@ -1,0 +1,9 @@
+.DS_Store
+xcuserdata/
+DerivedData/
+bin/
+obj/
+publish/
+*.db
+*.db-shm
+*.db-wal

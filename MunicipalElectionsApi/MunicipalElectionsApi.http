@@ -1,0 +1,63 @@
+@host = http://localhost:5161
+@token = {{login.response.body.$.token}}
+
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@test.com",
+  "password": "P@$$w0rd"
+}
+
+### Login (run this first, the token is saved automatically)
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "P@$$w0rd"
+}
+
+###
+GET {{host}}/api/municipalities
+
+###
+GET {{host}}/api/municipalities/1
+
+###
+GET {{host}}/api/positions
+
+###
+GET {{host}}/api/positions/1
+
+###
+GET {{host}}/api/candidates
+
+###
+GET {{host}}/api/candidates/3
+
+###
+GET {{host}}/api/candidates/search?name=park
+
+### Voting guide - add (needs token)
+POST {{host}}/api/savedcandidates
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "candidateId": 3
+}
+
+### Voting guide - list (needs token)
+GET {{host}}/api/savedcandidates
+Authorization: Bearer {{token}}
+
+### Voting guide - delete (needs token, use a savedCandidateId from the list)
+DELETE {{host}}/api/savedcandidates/1
+Authorization: Bearer {{token}}
+
+### Without a token -> should return 401
+GET {{host}}/api/savedcandidates
