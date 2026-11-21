@@ -1,5 +1,3 @@
-// app startup: registers the services (database, Identity, JWT, controllers)
-// and sets up the request pipeline.
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -9,37 +7,46 @@ using MunicipalElectionsApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Web API controllers + OpenAPI document (used by Swagger UI)
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// SQLite database through Entity Framework Core (connection string is in appsettings.json)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
-// Identity: user accounts are stored in the database
 builder.Services.AddIdentityCore<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// JWT: check the token sent in the "Authorization: Bearer <token>" header
-var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:Key is missing or shorter than 32 characters. " +
+        "Set it with 'dotnet user-secrets' locally or the Jwt__Key app setting on Azure.");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(jwtKey)
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1)
         };
     });
-// Enables the [Authorize] attribute on controllers
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Swagger UI at /swagger to view and test the endpoints
 app.MapOpenApi();
 app.UseSwaggerUI(options =>
 {
@@ -48,14 +55,11 @@ app.UseSwaggerUI(options =>
 
 app.UseHttpsRedirection();
 
-// Order matters: read the JWT first, then check [Authorize]
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Connect the routes in the Controllers folder
 app.MapControllers();
 
-// Apply migrations automatically (creates the database and seed data)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

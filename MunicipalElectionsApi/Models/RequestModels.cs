@@ -1,10 +1,7 @@
-// Request bodies the API receives.
-// The attributes ([Required], [EmailAddress], [MinLength]) are server-side validation.
 using System.ComponentModel.DataAnnotations;
 
 namespace MunicipalElectionsApi.Models;
 
-// Body for POST api/auth/register
 public class RegisterModel
 {
     [Required]
@@ -17,7 +14,6 @@ public class RegisterModel
     public string? Password { get; set; }
 }
 
-// Body for POST api/auth/login
 public class LoginModel
 {
     [Required, EmailAddress]
@@ -27,7 +23,6 @@ public class LoginModel
     public string? Password { get; set; }
 }
 
-// Body for POST api/savedcandidates
 public class SaveCandidateModel
 {
     public int CandidateId { get; set; }

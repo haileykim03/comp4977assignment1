@@ -21,43 +21,40 @@ Content-Type: application/json
   "password": "P@$$w0rd"
 }
 
-###
+### Who am I (checks the token)
+GET {{host}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Municipalities (public - used by the iOS city picker)
 GET {{host}}/api/municipalities
 
-###
-GET {{host}}/api/municipalities/1
+### A2: election summary for one municipality
+GET {{host}}/api/elections?city=Burnaby
+Authorization: Bearer {{token}}
+
+### A2: positions / offices for one municipality
+GET {{host}}/api/positions?city=Pitt Meadows
+Authorization: Bearer {{token}}
 
 ###
-GET {{host}}/api/positions
+GET {{host}}/api/offices?city=Burnaby
+Authorization: Bearer {{token}}
+
+### A2: candidates for one municipality
+GET {{host}}/api/candidates?city=Burnaby
+Authorization: Bearer {{token}}
+
+### A2: candidate 1 is in Pitt Meadows, so asking for it in Burnaby -> 404
+GET {{host}}/api/candidates/1?city=Burnaby
+Authorization: Bearer {{token}}
 
 ###
-GET {{host}}/api/positions/1
+GET {{host}}/api/candidates/search?city=Burnaby&name=park
+Authorization: Bearer {{token}}
 
-###
+### A2: no city -> 400
 GET {{host}}/api/candidates
-
-###
-GET {{host}}/api/candidates/3
-
-###
-GET {{host}}/api/candidates/search?name=park
-
-### Voting guide - add (needs token)
-POST {{host}}/api/savedcandidates
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "candidateId": 3
-}
-
-### Voting guide - list (needs token)
-GET {{host}}/api/savedcandidates
 Authorization: Bearer {{token}}
 
-### Voting guide - delete (needs token, use a savedCandidateId from the list)
-DELETE {{host}}/api/savedcandidates/1
-Authorization: Bearer {{token}}
-
-### Without a token -> should return 401
-GET {{host}}/api/savedcandidates
+### A2: no token -> 401
+GET {{host}}/api/candidates?city=Burnaby

@@ -1,9 +1,6 @@
 import Foundation
 
-// Property names match the JSON from our API
-
-// Codable = can be converted from/to JSON
-struct Municipality: Codable, Identifiable {
+nonisolated struct Municipality: Codable, Identifiable, Hashable {
     let municipalityId: Int
     let name: String
     let province: String?
@@ -11,17 +8,18 @@ struct Municipality: Codable, Identifiable {
     let description: String?
     let logoUrl: String?
 
-    var id: Int { municipalityId }   // List / ForEach need an id
+    var id: Int { municipalityId }
 }
 
-struct Position: Codable {
+nonisolated struct Position: Codable, Identifiable, Hashable {
     let positionId: Int
     let name: String
     let seatsAvailable: Int
+
+    var id: Int { positionId }
 }
 
-// position and municipality are filled by Include() in the API
-struct Candidate: Codable, Identifiable {
+nonisolated struct Candidate: Codable, Identifiable, Hashable {
     let candidateId: Int
     let name: String
     let biography: String?
@@ -34,39 +32,47 @@ struct Candidate: Codable, Identifiable {
     var id: Int { candidateId }
 }
 
-// A candidate in the user's voting guide
-struct SavedCandidate: Codable, Identifiable {
-    let savedCandidateId: Int
-    let candidateId: Int
-    let dateSaved: String
-    let candidate: Candidate?
-
-    var id: Int { savedCandidateId }
+nonisolated struct ElectionSummary: Codable {
+    let municipalityId: Int
+    let name: String
+    let province: String?
+    let electionDate: String
+    let description: String?
+    let logoUrl: String?
+    let positions: [PositionSummary]
 }
 
-// Bodies we send to / receive from the API
+nonisolated struct PositionSummary: Codable, Identifiable {
+    let positionId: Int
+    let name: String
+    let seatsAvailable: Int
+    let candidateCount: Int
 
-struct LoginRequest: Codable {
+    var id: Int { positionId }
+}
+
+nonisolated struct LoginRequest: Codable {
     let email: String
     let password: String
 }
 
-struct RegisterRequest: Codable {
+nonisolated struct RegisterRequest: Codable {
     let name: String
     let email: String
     let password: String
 }
 
-struct LoginResponse: Codable {
+nonisolated struct LoginResponse: Codable {
     let token: String
     let name: String?
     let email: String?
 }
 
-struct SaveCandidateRequest: Codable {
-    let candidateId: Int
+nonisolated struct MeResponse: Codable {
+    let name: String?
+    let email: String?
 }
 
-struct MessageResponse: Codable {
+nonisolated struct MessageResponse: Codable {
     let message: String
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MunicipalElectionsApi.Data;
@@ -5,60 +6,70 @@ using MunicipalElectionsApi.Models;
 
 namespace MunicipalElectionsApi.Controllers;
 
-// Public endpoints for candidates (no login needed)
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class CandidatesController : ControllerBase
+public class CandidatesController : CityScopedController
 {
-    // Database context, injected by ASP.NET (dependency injection)
-    private readonly ApplicationDbContext _context;
+    public CandidatesController(ApplicationDbContext context) : base(context) { }
 
-    public CandidatesController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
-    // GET: api/Candidates
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Candidate>>> GetCandidates()
+    public async Task<ActionResult<IEnumerable<Candidate>>> GetCandidates(string? city)
     {
-        // Include() also loads each candidate's position and municipality
+        var (municipality, error) = await FindCityAsync(city);
+        if (error != null)
+        {
+            return error;
+        }
+
         return await _context.Candidates!
+            .Where(c => c.MunicipalityId == municipality!.MunicipalityId)
             .Include(c => c.Position)
             .Include(c => c.Municipality)
+            .OrderBy(c => c.PositionId).ThenBy(c => c.Name)
             .ToListAsync();
     }
 
-    // GET: api/Candidates/1
     [HttpGet("{id}")]
-    public async Task<ActionResult<Candidate>> GetCandidate(int id)
+    public async Task<ActionResult<Candidate>> GetCandidate(int id, string? city)
     {
+        var (municipality, error) = await FindCityAsync(city);
+        if (error != null)
+        {
+            return error;
+        }
+
         var candidate = await _context.Candidates!
             .Include(c => c.Position)
             .Include(c => c.Municipality)
-            .FirstOrDefaultAsync(c => c.CandidateId == id);
+            .FirstOrDefaultAsync(c => c.CandidateId == id && c.MunicipalityId == municipality!.MunicipalityId);
 
         if (candidate == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Candidate not found in this municipality." });
         }
 
         return candidate;
     }
 
-    // GET: api/Candidates/search?name=park
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<Candidate>>> SearchCandidates(string? name)
+    public async Task<ActionResult<IEnumerable<Candidate>>> SearchCandidates(string? city, string? name)
     {
+        var (municipality, error) = await FindCityAsync(city);
+        if (error != null)
+        {
+            return error;
+        }
+
         if (string.IsNullOrWhiteSpace(name))
         {
             return BadRequest(new { message = "Please enter a name to search." });
         }
 
         return await _context.Candidates!
+            .Where(c => c.MunicipalityId == municipality!.MunicipalityId)
             .Include(c => c.Position)
             .Include(c => c.Municipality)
-            // Case-insensitive search by name
             .Where(c => c.Name!.ToLower().Contains(name.ToLower()))
             .ToListAsync();
     }

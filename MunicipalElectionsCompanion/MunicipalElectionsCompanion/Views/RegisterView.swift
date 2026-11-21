@@ -1,8 +1,7 @@
 import SwiftUI
 
-// Registration screen: name, email and password
 struct RegisterView: View {
-    @EnvironmentObject var auth: AuthViewModel
+    @Environment(AuthViewModel.self) private var auth
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
@@ -14,10 +13,14 @@ struct RegisterView: View {
         Form {
             Section {
                 TextField("Name", text: $name)
+                    .textContentType(.name)
                 TextField("Email", text: $email)
                     .keyboardType(.emailAddress)
                     .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .textContentType(.username)
                 SecureField("Password", text: $password)
+                    .textContentType(.newPassword)
                 Text("At least 6 characters, with an uppercase letter, a number and a symbol.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -30,33 +33,36 @@ struct RegisterView: View {
                 .disabled(isLoading)
 
                 if isLoading {
-                    ProgressView()
+                    ProgressView("Creating account…")
                 }
             }
         }
+        .frame(maxWidth: 600)
+        .frame(maxWidth: .infinity)
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Register")
         .alert("Error", isPresented: $showingAlert, actions: {
-            Button("OK", role: .none, action: {})
+            Button("OK", role: .cancel, action: {})
         }, message: {
             Text(errorMessage)
         })
     }
 
     func register() {
-        // Validate the form first
         if let message = auth.validate(name: name, email: email, password: password) {
             errorMessage = message
             showingAlert = true
             return
         }
 
-        // Create the account, then log in automatically
         Task {
             isLoading = true
             do {
-                try await auth.register(name: name, email: email, password: password)
+                try await auth.register(name: name.trimmingCharacters(in: .whitespaces),
+                                        email: email.trimmingCharacters(in: .whitespaces),
+                                        password: password)
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = ErrorMessage.from(error)
                 showingAlert = true
             }
             isLoading = false
@@ -68,5 +74,5 @@ struct RegisterView: View {
     NavigationStack {
         RegisterView()
     }
-    .environmentObject(AuthViewModel())
+    .previewEnvironment()
 }

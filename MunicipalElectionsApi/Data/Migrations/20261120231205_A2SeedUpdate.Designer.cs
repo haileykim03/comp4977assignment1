@@ -1,0 +1,817 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using MunicipalElectionsApi.Data;
+
+#nullable disable
+
+namespace MunicipalElectionsApi.Data.Migrations
+{
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20261120231205_A2SeedUpdate")]
+    partial class A2SeedUpdate
+    {
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.Candidate", b =>
+                {
+                    b.Property<int>("CandidateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Biography")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MunicipalityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PositionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CandidateId");
+
+                    b.HasIndex("MunicipalityId");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("Candidates");
+
+                    b.HasData(
+                        new
+                        {
+                            CandidateId = 1,
+                            Biography = "Small business owner focused on local jobs.",
+                            Email = "daniel@example.com",
+                            MunicipalityId = 1,
+                            Name = "Daniel Okafor",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Daniel%20Okafor",
+                            PositionId = 1,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 2,
+                            Biography = "Retired nurse who wants better services for seniors.",
+                            Email = "grace@example.com",
+                            MunicipalityId = 1,
+                            Name = "Grace Whitfield",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Grace%20Whitfield",
+                            PositionId = 1,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 3,
+                            Biography = "Civil engineer who wants safer roads and crosswalks.",
+                            Email = "priya@example.com",
+                            MunicipalityId = 1,
+                            Name = "Priya Sandhu",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Priya%20Sandhu",
+                            PositionId = 2,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 4,
+                            Biography = "Former teacher's aide who wants smaller class sizes.",
+                            Email = "hannah@example.com",
+                            MunicipalityId = 1,
+                            Name = "Hannah Cho",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Hannah%20Cho",
+                            PositionId = 3,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 5,
+                            Biography = "Two-term councillor focused on affordable housing.",
+                            Email = "robert@example.com",
+                            MunicipalityId = 2,
+                            Name = "Robert Tanaka",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Robert%20Tanaka",
+                            PositionId = 4,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 6,
+                            Biography = "Community organizer focused on public safety.",
+                            Email = "elena@example.com",
+                            MunicipalityId = 2,
+                            Name = "Elena Rossi",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Elena%20Rossi",
+                            PositionId = 4,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 7,
+                            Biography = "Firefighter who wants more parks and trails.",
+                            Email = "samuel@example.com",
+                            MunicipalityId = 2,
+                            Name = "Samuel Brooks",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Samuel%20Brooks",
+                            PositionId = 5,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 8,
+                            Biography = "School counsellor who supports student mental health.",
+                            Email = "liam@example.com",
+                            MunicipalityId = 2,
+                            Name = "Liam OConnor",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Liam%20OConnor",
+                            PositionId = 6,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 9,
+                            Biography = "Urban planner who wants homes near SkyTrain stations.",
+                            Email = "jennifer@example.com",
+                            MunicipalityId = 3,
+                            Name = "Jennifer Park",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Jennifer%20Park",
+                            PositionId = 7,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 10,
+                            Biography = "Entrepreneur who wants faster business permits.",
+                            Email = "michael@example.com",
+                            MunicipalityId = 3,
+                            Name = "Michael Novak",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Michael%20Novak",
+                            PositionId = 7,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 11,
+                            Biography = "Climate scientist who wants more bike lanes.",
+                            Email = "sofia@example.com",
+                            MunicipalityId = 3,
+                            Name = "Sofia Martinez",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Sofia%20Martinez",
+                            PositionId = 8,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 12,
+                            Biography = "Librarian who wants a library in every school.",
+                            Email = "olivia@example.com",
+                            MunicipalityId = 3,
+                            Name = "Olivia Bennett",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Olivia%20Bennett",
+                            PositionId = 9,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 13,
+                            Biography = "Accountant who wants a balanced city budget.",
+                            Email = "arjun@example.com",
+                            MunicipalityId = 1,
+                            Name = "Arjun Mehta",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Arjun%20Mehta",
+                            PositionId = 2,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 14,
+                            Biography = "Farmer who wants to protect agricultural land.",
+                            Email = "fiona@example.com",
+                            MunicipalityId = 1,
+                            Name = "Fiona MacLeod",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Fiona%20MacLeod",
+                            PositionId = 2,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 15,
+                            Biography = "Paramedic focused on emergency response times.",
+                            Email = "kevin@example.com",
+                            MunicipalityId = 1,
+                            Name = "Kevin Byrne",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Kevin%20Byrne",
+                            PositionId = 2,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 16,
+                            Biography = "Youth soccer coach who wants more sports fields.",
+                            Email = "mei@example.com",
+                            MunicipalityId = 1,
+                            Name = "Mei Chen",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Mei%20Chen",
+                            PositionId = 2,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 17,
+                            Biography = "Transit advocate who wants better bus service.",
+                            Email = "owen@example.com",
+                            MunicipalityId = 1,
+                            Name = "Owen Gallagher",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Owen%20Gallagher",
+                            PositionId = 2,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 18,
+                            Biography = "Parent volunteer who wants healthy school lunches.",
+                            Email = "aisha@example.com",
+                            MunicipalityId = 1,
+                            Name = "Aisha Karim",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Aisha%20Karim",
+                            PositionId = 3,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 19,
+                            Biography = "French immersion teacher who supports language programs.",
+                            Email = "lucas@example.com",
+                            MunicipalityId = 1,
+                            Name = "Lucas Fontaine",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Lucas%20Fontaine",
+                            PositionId = 3,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 20,
+                            Biography = "Architect who wants walkable neighbourhoods.",
+                            Email = "nina@example.com",
+                            MunicipalityId = 2,
+                            Name = "Nina Petrova",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Nina%20Petrova",
+                            PositionId = 5,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 21,
+                            Biography = "Restaurant owner focused on the local economy.",
+                            Email = "diego@example.com",
+                            MunicipalityId = 2,
+                            Name = "Diego Alvarez",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Diego%20Alvarez",
+                            PositionId = 5,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 22,
+                            Biography = "Environmental scientist who wants cleaner rivers.",
+                            Email = "julia@example.com",
+                            MunicipalityId = 2,
+                            Name = "Julia Kowalski",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Julia%20Kowalski",
+                            PositionId = 5,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 23,
+                            Biography = "Software developer who wants coding in every school.",
+                            Email = "hamid@example.com",
+                            MunicipalityId = 2,
+                            Name = "Hamid Rahimi",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Hamid%20Rahimi",
+                            PositionId = 6,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 24,
+                            Biography = "Housing co-op manager focused on rental homes.",
+                            Email = "marcus@example.com",
+                            MunicipalityId = 3,
+                            Name = "Marcus Delgado",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Marcus%20Delgado",
+                            PositionId = 8,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 25,
+                            Biography = "Public health nurse who wants more community clinics.",
+                            Email = "amara@example.com",
+                            MunicipalityId = 3,
+                            Name = "Amara Nwosu",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Amara%20Nwosu",
+                            PositionId = 8,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 26,
+                            Biography = "Retired police officer focused on safer streets.",
+                            Email = "tom@example.com",
+                            MunicipalityId = 3,
+                            Name = "Tom Hargreaves",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Tom%20Hargreaves",
+                            PositionId = 8,
+                            Website = "https://example.com"
+                        },
+                        new
+                        {
+                            CandidateId = 27,
+                            Biography = "Former principal who wants more school counsellors.",
+                            Email = "eleanor@example.com",
+                            MunicipalityId = 3,
+                            Name = "Eleanor Whitfield",
+                            PhotoUrl = "https://ui-avatars.com/api/?size=256&name=Eleanor%20Whitfield",
+                            PositionId = 9,
+                            Website = "https://example.com"
+                        });
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.Municipality", b =>
+                {
+                    b.Property<int>("MunicipalityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ElectionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Province")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MunicipalityId");
+
+                    b.ToTable("Municipalities");
+
+                    b.HasData(
+                        new
+                        {
+                            MunicipalityId = 1,
+                            Description = "A small city known for its farmland and rivers.",
+                            ElectionDate = new DateTime(2026, 10, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LogoUrl = "https://ui-avatars.com/api/?size=256&name=Pitt%20Meadows",
+                            Name = "Pitt Meadows",
+                            Province = "BC"
+                        },
+                        new
+                        {
+                            MunicipalityId = 2,
+                            Description = "A growing city near Golden Ears Provincial Park.",
+                            ElectionDate = new DateTime(2026, 10, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LogoUrl = "https://ui-avatars.com/api/?size=256&name=Maple%20Ridge",
+                            Name = "Maple Ridge",
+                            Province = "BC"
+                        },
+                        new
+                        {
+                            MunicipalityId = 3,
+                            Description = "A large city in Metro Vancouver, home to BCIT.",
+                            ElectionDate = new DateTime(2026, 10, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LogoUrl = "https://ui-avatars.com/api/?size=256&name=Burnaby",
+                            Name = "Burnaby",
+                            Province = "BC"
+                        });
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.Position", b =>
+                {
+                    b.Property<int>("PositionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MunicipalityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SeatsAvailable")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PositionId");
+
+                    b.HasIndex("MunicipalityId");
+
+                    b.ToTable("Positions");
+
+                    b.HasData(
+                        new
+                        {
+                            PositionId = 1,
+                            MunicipalityId = 1,
+                            Name = "Mayor",
+                            SeatsAvailable = 1
+                        },
+                        new
+                        {
+                            PositionId = 2,
+                            MunicipalityId = 1,
+                            Name = "Councillor",
+                            SeatsAvailable = 5
+                        },
+                        new
+                        {
+                            PositionId = 3,
+                            MunicipalityId = 1,
+                            Name = "School Trustee",
+                            SeatsAvailable = 2
+                        },
+                        new
+                        {
+                            PositionId = 4,
+                            MunicipalityId = 2,
+                            Name = "Mayor",
+                            SeatsAvailable = 1
+                        },
+                        new
+                        {
+                            PositionId = 5,
+                            MunicipalityId = 2,
+                            Name = "Councillor",
+                            SeatsAvailable = 6
+                        },
+                        new
+                        {
+                            PositionId = 6,
+                            MunicipalityId = 2,
+                            Name = "School Trustee",
+                            SeatsAvailable = 5
+                        },
+                        new
+                        {
+                            PositionId = 7,
+                            MunicipalityId = 3,
+                            Name = "Mayor",
+                            SeatsAvailable = 1
+                        },
+                        new
+                        {
+                            PositionId = 8,
+                            MunicipalityId = 3,
+                            Name = "Councillor",
+                            SeatsAvailable = 8
+                        },
+                        new
+                        {
+                            PositionId = 9,
+                            MunicipalityId = 3,
+                            Name = "School Trustee",
+                            SeatsAvailable = 7
+                        });
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.SavedCandidate", b =>
+                {
+                    b.Property<int>("SavedCandidateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CandidateId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateSaved")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("SavedCandidateId");
+
+                    b.HasIndex("CandidateId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SavedCandidates");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("MunicipalElectionsApi.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("MunicipalElectionsApi.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MunicipalElectionsApi.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("MunicipalElectionsApi.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.Candidate", b =>
+                {
+                    b.HasOne("MunicipalElectionsApi.Models.Municipality", "Municipality")
+                        .WithMany()
+                        .HasForeignKey("MunicipalityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MunicipalElectionsApi.Models.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Municipality");
+
+                    b.Navigation("Position");
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.Position", b =>
+                {
+                    b.HasOne("MunicipalElectionsApi.Models.Municipality", "Municipality")
+                        .WithMany()
+                        .HasForeignKey("MunicipalityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Municipality");
+                });
+
+            modelBuilder.Entity("MunicipalElectionsApi.Models.SavedCandidate", b =>
+                {
+                    b.HasOne("MunicipalElectionsApi.Models.Candidate", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MunicipalElectionsApi.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("User");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}

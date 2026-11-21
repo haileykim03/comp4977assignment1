@@ -1,15 +1,26 @@
 import SwiftUI
+import FirebaseCore
 
-// App entry point
 @main
 struct MunicipalElectionsCompanionApp: App {
-    // One shared login state for the whole app
-    @StateObject private var auth = AuthViewModel()
+    @State private var auth = AuthViewModel()
+    @State private var city = CityViewModel()
+    @State private var home = HomeViewModel()
+    @State private var candidates = CandidatesViewModel()
+    @State private var selections = SelectionsViewModel()
+
+    init() {
+        FirebaseApp.configure()
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(auth)
+                .environment(auth)
+                .environment(city)
+                .environment(home)
+                .environment(candidates)
+                .environment(selections)
         }
     }
 }

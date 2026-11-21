@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MunicipalElectionsApi.Data;
@@ -5,40 +6,46 @@ using MunicipalElectionsApi.Models;
 
 namespace MunicipalElectionsApi.Controllers;
 
-// Public endpoints for positions (no login needed)
-[Route("api/[controller]")]
+[Authorize]
+[Route("api/positions")]
+[Route("api/offices")]
 [ApiController]
-public class PositionsController : ControllerBase
+public class PositionsController : CityScopedController
 {
-    // Database context, injected by ASP.NET (dependency injection)
-    private readonly ApplicationDbContext _context;
+    public PositionsController(ApplicationDbContext context) : base(context) { }
 
-    public PositionsController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
-    // GET: api/Positions
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Position>>> GetPositions()
+    public async Task<ActionResult<IEnumerable<Position>>> GetPositions(string? city)
     {
-        // Include() also loads the municipality of each position
+        var (municipality, error) = await FindCityAsync(city);
+        if (error != null)
+        {
+            return error;
+        }
+
         return await _context.Positions!
+            .Where(p => p.MunicipalityId == municipality!.MunicipalityId)
             .Include(p => p.Municipality)
+            .OrderBy(p => p.PositionId)
             .ToListAsync();
     }
 
-    // GET: api/Positions/1
     [HttpGet("{id}")]
-    public async Task<ActionResult<Position>> GetPosition(int id)
+    public async Task<ActionResult<Position>> GetPosition(int id, string? city)
     {
+        var (municipality, error) = await FindCityAsync(city);
+        if (error != null)
+        {
+            return error;
+        }
+
         var position = await _context.Positions!
             .Include(p => p.Municipality)
-            .FirstOrDefaultAsync(p => p.PositionId == id);
+            .FirstOrDefaultAsync(p => p.PositionId == id && p.MunicipalityId == municipality!.MunicipalityId);
 
         if (position == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Position not found in this municipality." });
         }
 
         return position;

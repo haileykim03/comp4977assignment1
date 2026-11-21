@@ -1,58 +1,148 @@
 import SwiftUI
 
-// Candidate Details: photo, biography, website, email and the Add to Voting Guide button
 struct CandidateDetailView: View {
-    @EnvironmentObject var auth: AuthViewModel
-    @State private var viewModel = VotingGuideViewModel()
+    @Environment(SelectionsViewModel.self) private var selections
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     let candidate: Candidate
+
+    private var isWide: Bool {
+        horizontalSizeClass == .regular || verticalSizeClass == .compact
+    }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                // Load the photo from its URL
-                AsyncImage(url: URL(string: candidate.photoUrl ?? "")) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(width: 150, height: 150)
-                .clipShape(Circle())
-
-                Text(candidate.name)
-                    .font(.largeTitle)
-                    .bold()
-                Text("\(candidate.position?.name ?? "") · \(candidate.municipality?.name ?? "")")
-                    .foregroundStyle(.secondary)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Biography").font(.headline)
-                    Text(candidate.biography ?? "No biography.")
-
-                    Text("Website").font(.headline)
-                    if let website = candidate.website, let url = URL(string: website) {
-                        Link(website, destination: url)
+            Group {
+                if isWide {
+                    HStack(alignment: .top, spacing: 32) {
+                        CandidatePhoto(url: candidate.photoUrl, size: 200)
+                        VStack(alignment: .leading, spacing: 20) {
+                            information
+                            selectionSection
+                        }
                     }
-
-                    Text("Email").font(.headline)
-                    Text(candidate.email ?? "-")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                // POST /api/savedcandidates, then show the result in an alert
-                Button("Add to Voting Guide") {
-                    Task {
-                        await viewModel.add(candidateId: candidate.candidateId, token: auth.token ?? "")
+                } else {
+                    VStack(spacing: 20) {
+                        CandidatePhoto(url: candidate.photoUrl, size: 150)
+                        information
+                        selectionSection
                     }
                 }
-                .buttonStyle(.borderedProminent)
             }
             .padding()
+            .frame(maxWidth: 900)
+            .frame(maxWidth: .infinity)
         }
+        .navigationTitle(candidate.name)
         .navigationBarTitleDisplayMode(.inline)
-        .alert("Voting Guide", isPresented: $viewModel.showingAlert, actions: {
-            Button("OK", role: .none, action: {})
-        }, message: {
-            Text(viewModel.message)
-        })
     }
+
+    private var information: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(candidate.name)
+                .font(.largeTitle)
+                .bold()
+            Text("\(candidate.position?.name ?? "") · \(candidate.municipality?.name ?? "")")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+
+            Text("Biography").font(.headline)
+            Text(candidate.biography ?? "No biography.")
+
+            if let website = candidate.website, let url = URL(string: website) {
+                Text("Website").font(.headline)
+                Link(website, destination: url)
+            }
+
+            if let email = candidate.email {
+                Text("Email").font(.headline)
+                if let url = URL(string: "mailto:\(email)") {
+                    Link(email, destination: url)
+                } else {
+                    Text(email)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var selectionSection: some View {
+        GroupBox {
+            if let saved = selections.selection(for: candidate.candidateId) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("In My Candidate Selections", systemImage: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                        .font(.headline)
+                    Text("Saved \(DateText.dateTime(saved.dateCreated))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Text(saved.notes.isEmpty ? "No notes." : saved.notes)
+
+                    ViewThatFits {
+                        HStack {
+                            editButton(saved)
+                            deleteButton(saved)
+                        }
+                        VStack(alignment: .leading) {
+                            editButton(saved)
+                            deleteButton(saved)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                VStack(alignment: .leading, spacing: 10) {
+                    if let position = candidate.position {
+                        Text("\(position.name): \(selections.count(forPositionId: position.positionId)) of \(position.seatsAvailable) chosen")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    let reason = selections.reasonCannotAdd(candidate)
+                    if let reason {
+                        Label(reason, systemImage: "exclamationmark.triangle")
+                            .font(.footnote)
+                            .foregroundStyle(.orange)
+                    }
+
+                    Button {
+                        selections.beginAdd(candidate)
+                    } label: {
+                        Label("Add Selection", systemImage: "plus.circle.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(reason != nil)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        } label: {
+            Text("My Selection")
+        }
+    }
+
+    private func editButton(_ saved: CandidateSelection) -> some View {
+        Button {
+            selections.beginEdit(saved)
+        } label: {
+            Label("Edit Selection", systemImage: "pencil")
+        }
+        .buttonStyle(.bordered)
+    }
+
+    private func deleteButton(_ saved: CandidateSelection) -> some View {
+        Button(role: .destructive) {
+            selections.askToDelete(saved)
+        } label: {
+            Label("Delete Selection", systemImage: "trash")
+        }
+        .buttonStyle(.bordered)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CandidateDetailView(candidate: PreviewData.candidate)
+    }
+    .previewEnvironment()
 }

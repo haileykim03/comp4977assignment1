@@ -1,8 +1,7 @@
 import SwiftUI
 
-// Login screen: email + password, validation, and a link to create an account
 struct LoginView: View {
-    @EnvironmentObject var auth: AuthViewModel
+    @Environment(AuthViewModel.self) private var auth
     @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
@@ -13,11 +12,25 @@ struct LoginView: View {
         NavigationStack {
             Form {
                 Section {
+                    AppHeader()
+                }
+                .listRowBackground(Color.clear)
+
+                if !auth.sessionMessage.isEmpty {
+                    Section {
+                        Label(auth.sessionMessage, systemImage: "clock.badge.exclamationmark")
+                            .foregroundStyle(.orange)
+                    }
+                }
+
+                Section {
                     TextField("Email", text: $email)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
-                    // SecureField hides the password
+                        .autocorrectionDisabled()
+                        .textContentType(.username)
                     SecureField("Password", text: $password)
+                        .textContentType(.password)
                 }
 
                 Section {
@@ -27,19 +40,20 @@ struct LoginView: View {
                     .disabled(isLoading)
 
                     if isLoading {
-                        ProgressView()
+                        ProgressView("Signing in…")
                     }
                 }
 
                 Section {
-                    // Go to the registration screen
                     NavigationLink("Create Account", destination: RegisterView())
                 }
             }
+            .frame(maxWidth: 600)
+            .frame(maxWidth: .infinity)
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Login")
-            // Shows validation and API error messages
             .alert("Error", isPresented: $showingAlert, actions: {
-                Button("OK", role: .none, action: {})
+                Button("OK", role: .cancel, action: {})
             }, message: {
                 Text(errorMessage)
             })
@@ -47,20 +61,18 @@ struct LoginView: View {
     }
 
     func login() {
-        // Validate the form first
         if let message = auth.validate(email: email, password: password) {
             errorMessage = message
             showingAlert = true
             return
         }
 
-        // Call the API. When the token is set, ContentView switches to the tabs.
         Task {
             isLoading = true
             do {
-                try await auth.login(email: email, password: password)
+                try await auth.login(email: email.trimmingCharacters(in: .whitespaces), password: password)
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = ErrorMessage.from(error)
                 showingAlert = true
             }
             isLoading = false
@@ -68,7 +80,44 @@ struct LoginView: View {
     }
 }
 
+struct AppHeader: View {
+    var body: some View {
+        ViewThatFits {
+            HStack(spacing: 16) {
+                logo
+                titles(alignment: .leading)
+                    .fixedSize()
+            }
+            VStack(spacing: 10) {
+                logo
+                titles(alignment: .center)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var logo: some View {
+        Image("AppLogo")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 80, height: 80)
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .accessibilityHidden(true)
+    }
+
+    private func titles(alignment: HorizontalAlignment) -> some View {
+        VStack(alignment: alignment, spacing: 4) {
+            Text("Municipal Elections Companion")
+                .font(.title2.bold())
+            Text("Know your candidates. Plan your vote.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
 #Preview {
     LoginView()
-        .environmentObject(AuthViewModel())
+        .previewEnvironment()
 }
